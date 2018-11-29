@@ -38,13 +38,9 @@ void func(int sockfd)
 
 
 
-// 	read(sockfd, buff, sizeof(buff));
+ 	read(sockfd, buff, sizeof(buff));
                 // print buffer which contains the client contents
-  //      printf("From client: %s\t To client : ", buff);
-
-
-		
-
+        printf("From client: %s\t To client : ", buff);
 
 
 	for (;;) { 
@@ -56,10 +52,16 @@ void func(int sockfd)
 		// read the message from client and copy it in buffer 
 		read(sockfd, buff, sizeof(buff)); 
 		// print buffer which contains the client contents 
-		printf("From client: %s\t To client : ", buff); 
+		printf("client guess: %s\t To client : ", buff); 
 	
-	
+
+		char* pPosition = strchr(hangmanWord, buff[0]);	
 		
+		if(pPosition)
+		{
+			printf("NOT NULL");
+		}	
+	
 		int sum = 10;
                 int flag = 0;
                 while(sum >= 10)
