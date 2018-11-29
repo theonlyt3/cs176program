@@ -68,7 +68,7 @@ void func(int sockfd)
 		fgets(buff, 1024, stdin);
 		char holder[MAX];
 		sprintf(holder,buff);
-		printf("Holder is %s, sizeof(buff) is %d, strlen(buff) is %d",holder,sizeof(buff),strlen(buff));
+		//printf("Holder is %s, sizeof(buff) is %d, strlen(buff) is %d",holder,sizeof(buff),strlen(buff));
 		//sprintf(buff, strlen(buff) - '0'); // CAUSES SEGMENTATION FAULT
 		//strcat(holder,buff);
 		
@@ -77,12 +77,15 @@ void func(int sockfd)
 
 		write(sockfd, buff, sizeof(buff));
 		read(sockfd,buff,sizeof(buff));
-		while(strlen(buff) > 0)
+		printf("From server : %s\n", buff);
+		read(sockfd,buff,sizeof(buff));
+		printf("From server : %s\n", buff);
+		/*while(strlen(buff) > 0)
 		{
 			printf("From server : %s\n", buff);
 			if(strlen(buff) == 1 || buff[0] == 'S') break;
 			read(sockfd,buff,sizeof(buff));
-		}
+		}*/
 	} 
 } 
 

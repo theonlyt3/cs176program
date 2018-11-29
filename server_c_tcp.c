@@ -47,8 +47,6 @@ void func(int sockfd)
 		//bzero(buff, MAX); 
 
 
-
-
 		// read the message from client and copy it in buffer 
 		read(sockfd, buff, sizeof(buff)); 
 		// print buffer which contains the client contents 
@@ -59,9 +57,36 @@ void func(int sockfd)
 		
 		if(pPosition)
 		{
-			printf("NOT NULL");
+
+
+			
+			printf("NOT NULL INDEX IS %d IN WORD %s, and LENGTH IS %d\n", pPosition - hangmanWord,hangmanWord, strlen(hangmanWord));
+
+			while(pPosition)
+			{
+				userEntry[pPosition-hangmanWord] = buff[0];
+				hangmanWord[pPosition-hangmanWord] = '*';
+				pPosition = strchr(hangmanWord, buff[0]); 	
+			}
+			/*for(int i = pPosition-hangmanWord; i < strlen(hangmanWord)-1; i++)
+			{
+				userEntry[pPosition-hangmanWord] = buff[0];
+				//printf(hangmanWord[i]);
+
+			}*/
+		}else
+		{
+			incorrectGuesses[strlen(incorrectGuesses)] = buff[0];
+			numIncorrect++;
 		}	
 	
+		sprintf(buff,userEntry);
+		write(sockfd, buff, sizeof(buff));
+
+		sprintf(buff, "Incorrect Guesses: %s", incorrectGuesses);
+		write(sockfd, buff, sizeof(buff));
+		continue;
+/*
 		int sum = 10;
                 int flag = 0;
                 while(sum >= 10)
@@ -87,23 +112,8 @@ void func(int sockfd)
 			write(sockfd,buff, sizeof(buff));
                 }
 				
+*/
 
-
-		/*
-		bzero(buff, MAX); 
-		n = 0; 
-		// copy server message in the buffer 
-		while ((buff[n++] = getchar()) != '\n') 
-			; 
-
-		// and send that buffer to client 
-		write(sockfd, buff, sizeof(buff)); 
-
-		// if msg contains "Exit" then server exit and chat ended. 
-		if (strncmp("exit", buff, 4) == 0) { 
-			printf("Server Exit...\n"); 
-			break; 
-		} */
 	} 
 } 
 
