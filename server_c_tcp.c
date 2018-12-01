@@ -26,10 +26,6 @@ void func(int sockfd)
 		userEntry[ strlen(userEntry) ] = '_';
 	}
 
-
-
-
-
 	// infinite loop for chat 
 	sprintf(buff,userEntry);
 	write(sockfd,buff, sizeof(buff));	
@@ -60,7 +56,7 @@ void func(int sockfd)
 
 
 			
-			printf("NOT NULL INDEX IS %d IN WORD %s, and LENGTH IS %d\n", pPosition - hangmanWord,hangmanWord, strlen(hangmanWord));
+			//printf("NOT NULL INDEX IS %d IN WORD %s, and LENGTH IS %d\n", pPosition - hangmanWord,hangmanWord, strlen(hangmanWord));
 
 			while(pPosition)
 			{
@@ -68,6 +64,22 @@ void func(int sockfd)
 				hangmanWord[pPosition-hangmanWord] = '*';
 				pPosition = strchr(hangmanWord, buff[0]); 	
 			}
+
+			
+
+			char* isWordComplete = strchr(userEntry, '_');
+			if(!isWordComplete)
+			{
+				sprintf(buff, "The word was %s", userEntry);
+                                write(sockfd, buff, sizeof(buff));
+                                sprintf(buff, "You Win!");
+                                write(sockfd, buff, sizeof(buff));
+				sprintf(buff, "Game Over!");
+                                write(sockfd, buff, sizeof(buff));
+                                return;
+			}
+
+
 			/*for(int i = pPosition-hangmanWord; i < strlen(hangmanWord)-1; i++)
 			{
 				userEntry[pPosition-hangmanWord] = buff[0];
@@ -78,7 +90,25 @@ void func(int sockfd)
 		{
 			incorrectGuesses[strlen(incorrectGuesses)] = buff[0];
 			numIncorrect++;
+			if(numIncorrect > 5)
+			{
+				sprintf(buff, "You Lose.");
+				write(sockfd, buff, sizeof(buff));
+				sprintf(buff, "Game Over!");
+				write(sockfd, buff, sizeof(buff));
+				return;
+
+			}
 		}	
+
+
+		//THIS IS WHAT THE MESSAGE FORMAT SHOULD LOOK LIKE RELATIVELY 
+		//sprintf(buff, "0%d%d%s%s", strlen(hangmanWord), numIncorrect, userEntry, incorrectGuesses);
+		//write(sockfd,buff,sizeof(buff));
+
+
+
+
 	
 		sprintf(buff,userEntry);
 		write(sockfd, buff, sizeof(buff));
