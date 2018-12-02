@@ -7,6 +7,7 @@
 #define MAX 80 
 #define PORT 8080 
 #define SA struct sockaddr 
+
 void prepend(char* s, const char* t)
 {
     size_t len = strlen(t);
@@ -40,12 +41,17 @@ void func(int sockfd)
 	}else if ( buff[0] == 'y' )
 	{
 		//printf("Success");
-		sprintf(buff, "0","0");
+		sprintf(buff, "0","0"); 
 		write(sockfd, buff, sizeof(buff));
 		read(sockfd, buff, sizeof(buff));
-		printf("From server : %s\n", buff);
+
+		printf(">>>");
+		for(int i = 0; i < strlen(buff); i++) {
+			printf("%c ", buff[i]);
+		} 
+		printf("\n");
 		read(sockfd, buff, sizeof(buff));
-		printf("From server : %s\n", buff);
+		printf(">>> %s\n", buff);
 	}
 
 	for (;;) { 

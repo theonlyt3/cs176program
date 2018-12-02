@@ -36,17 +36,15 @@ void func(int sockfd)
 
  	read(sockfd, buff, sizeof(buff));
                 // print buffer which contains the client contents
-        printf("From client: %s\t To client : ", buff);
+        printf("From client: %s ", buff);
 
 
 	for (;;) { 
-		//bzero(buff, MAX); 
-
 
 		// read the message from client and copy it in buffer 
 		read(sockfd, buff, sizeof(buff)); 
 		// print buffer which contains the client contents 
-		printf("client guess: %s\t To client : ", buff); 
+		printf("client guess: %s ", buff); 
 	
 
 		char* pPosition = strchr(hangmanWord, buff[0]);	
@@ -55,7 +53,6 @@ void func(int sockfd)
 		{
 
 
-			
 			//printf("NOT NULL INDEX IS %d IN WORD %s, and LENGTH IS %d\n", pPosition - hangmanWord,hangmanWord, strlen(hangmanWord));
 
 			while(pPosition)
@@ -63,9 +60,8 @@ void func(int sockfd)
 				userEntry[pPosition-hangmanWord] = buff[0];
 				hangmanWord[pPosition-hangmanWord] = '*';
 				pPosition = strchr(hangmanWord, buff[0]); 	
-			}
+			}	
 
-			
 
 			char* isWordComplete = strchr(userEntry, '_');
 			if(!isWordComplete)
@@ -105,10 +101,6 @@ void func(int sockfd)
 		//THIS IS WHAT THE MESSAGE FORMAT SHOULD LOOK LIKE RELATIVELY 
 		//sprintf(buff, "0%d%d%s%s", strlen(hangmanWord), numIncorrect, userEntry, incorrectGuesses);
 		//write(sockfd,buff,sizeof(buff));
-
-
-
-
 	
 		sprintf(buff,userEntry);
 		write(sockfd, buff, sizeof(buff));
