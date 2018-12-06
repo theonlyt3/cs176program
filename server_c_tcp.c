@@ -14,12 +14,12 @@ void func(int sockfd)
 { 
 	char buff[MAX]; 
 	int n;
-	char hangmanWord[8];
+	char hangmanWord[10];
 	char userEntry[MAX] = "";
 	char incorrectGuesses[MAX] = "";
 	int numIncorrect = 0;
 
-	sprintf(hangmanWord, "straight", "straight");
+	sprintf(hangmanWord, "straight\0");
 
 	for(int i = 0; i < strlen(hangmanWord); i++)
 	{
@@ -33,10 +33,12 @@ void func(int sockfd)
 	write(sockfd,buff,sizeof(buff));
 
 
-
+        printf("HANGMAN WORD IS %s", hangmanWord);
  	read(sockfd, buff, sizeof(buff));
+        printf("HANGMAN WORD IS %s", hangmanWord);
+
                 // print buffer which contains the client contents
-        printf("From client: %s ", buff);
+        printf("From client: %s \n", buff);
 
 
 	for (;;) { 
@@ -44,7 +46,7 @@ void func(int sockfd)
 		// read the message from client and copy it in buffer 
 		read(sockfd, buff, sizeof(buff)); 
 		// print buffer which contains the client contents 
-		printf("client guess: %s ", buff); 
+		printf("client guess: %s \n", buff); 
 	
 
 		char* pPosition = strchr(hangmanWord, buff[0]);	
@@ -61,7 +63,7 @@ void func(int sockfd)
 				hangmanWord[pPosition-hangmanWord] = '*';
 				pPosition = strchr(hangmanWord, buff[0]); 	
 			}	
-
+                    
 
 			char* isWordComplete = strchr(userEntry, '_');
 			if(!isWordComplete)
