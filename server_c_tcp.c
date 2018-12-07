@@ -196,7 +196,7 @@ void func(int sockfd)
 // Driver function 
 int main() 
 { 
-	int sockfd, connfd, len; 
+	int sockfd, connfd, len, master_socket, max_clients = 30, client_socket[30]; 
 	struct sockaddr_in servaddr, cli; 
 
 	// socket create and verification 
@@ -208,6 +208,27 @@ int main()
 	else
 		printf("Socket successfully created..\n"); 
 	bzero(&servaddr, sizeof(servaddr)); 
+
+	//initialise all client_socket[] to 0 so not checked
+    	for (i = 0; i < max_clients; i++)
+    	{
+        	client_socket[i] = 0;
+    	}
+
+	//create a master socket
+    	if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)
+    	{
+        	perror("socket failed");
+        	exit(EXIT_FAILURE);
+    	}
+
+	//set master socket to allow multiple connections
+    	if( setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,
+          sizeof(opt)) < 0 )
+    	{
+        	perror("setsockopt");
+        	exit(EXIT_FAILURE);
+    	}
 
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
