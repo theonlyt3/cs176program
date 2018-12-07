@@ -55,13 +55,13 @@ void func(int sockfd)
 	}
         fclose(fp);
 	
-	strcat(hangmanWord, "\0");
+	//strcat(hangmanWord, "\0");
 	
 
 	//sprintf(hangmanWord, "straight\0");
         sprintf(originalWord, hangmanWord);
 
-	for(int i = 0; i < strlen(hangmanWord); i++)
+	for(int i = 0; i < strlen(hangmanWord)-1; i++)
 	{
 		userEntry[ strlen(userEntry) ] = '_';
 	}
@@ -78,11 +78,14 @@ void func(int sockfd)
 
         //printf("HANGMAN WORD IS %s", hangmanWord);
  	read(sockfd, buff, sizeof(buff));
-        printf("HANGMAN WORD IS %s", hangmanWord);
+        printf("HANGMAN WORD IS %s|", hangmanWord);
 
                 // print buffer which contains the client contents
         printf("From client: %s \n", buff);
+        //strncpy(hangmanWord, hangmanWord, strlen(hangmanWord)-2);
 
+        //char* newLine = strchr(hangmanWord,13);
+        //hangmanWord[ newLine - hangmanWord] = '*';
 
 	for (;;) { 
 
@@ -115,7 +118,7 @@ void func(int sockfd)
                        // printf("n is %d\n",n);
                        //printf(strlen(isWordComplete)); 
                         printf("%s\n", userEntry);
-			if(numCorrect == strlen(hangmanWord))
+			if(numCorrect == strlen(hangmanWord)-1)
                         {
                                 //sprintf(buff,"TESTING\n");
                                 int messageLength = 13 + strlen(hangmanWord);
@@ -126,7 +129,7 @@ void func(int sockfd)
 
 				sprintf(buff, "8You Win!");
                                 write(sockfd, buff, sizeof(buff));
-                                break;
+                                return;
 			}
 
 			/*for(int i = pPosition-hangmanWord; i < strlen(hangmanWord)-1; i++)
@@ -153,7 +156,7 @@ void func(int sockfd)
 
 
 		//THIS IS WHAT THE MESSAGE FORMAT SHOULD LOOK LIKE RELATIVELY 
-		sprintf(buff, "0%d%d%s%s", strlen(hangmanWord), numIncorrect, userEntry, incorrectGuesses);
+		sprintf(buff, "0%d%d%s%s", strlen(hangmanWord)-1, numIncorrect, userEntry, incorrectGuesses);
 		write(sockfd,buff,sizeof(buff));
 	
 		//sprintf(buff,userEntry);
