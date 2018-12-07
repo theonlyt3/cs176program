@@ -85,13 +85,7 @@ void func(int sockfd)
 
 		write(sockfd, buff, sizeof(buff));
 		read(sockfd,buff,sizeof(buff));
-		//printf("From server : %s\n", buff);
-		/*while(strlen(buff) > 0)
-		{
-			printf("From server : %s\n", buff);
-			if(strlen(buff) == 1 || buff[0] == 'S') break;
-			read(sockfd,buff,sizeof(buff));
-		}*/
+		
                 }else
                 {
                   for(int i = 0; i < strlen(buff); i++)
@@ -104,19 +98,18 @@ void func(int sockfd)
                   }
                   printf("\n");
                     //printf("buff:%s\n",buff);
-                    read(sockfd,buff,sizeof(buff));
-                    for(int i = 0; i < strlen(buff); i++)
-                  {
+                  read(sockfd,buff,sizeof(buff));
+                  for(int i = 0; i < strlen(buff); i++) {
                     if(buff[i] >= '0' && buff[i] <= '9')
                       continue;
                     printf("%c",buff[i]);
 
                   }
+		 
                   printf("\n");
 
-                    //printf("buff:%s\n",buff);
-                    printf("Game Over!\n");
-                    break;
+                  printf("Game Over!\n");
+                  break;
                 }
 	} 
 } 

@@ -4,8 +4,11 @@
 #include <stdlib.h> 
 #include <string.h> 
 #include <sys/socket.h> 
-#include <sys/types.h> 
-#define MAX 80 
+#include <sys/types.h>
+#include <stdio.h>
+#include <time.h>
+#define MAX 80
+#define MAXCHAR 100000
 #define PORT 8080 
 #define SA struct sockaddr
 
@@ -23,12 +26,37 @@ void func(int sockfd)
 { 
 	char buff[MAX]; 
 	int n;
-	char hangmanWord[10];
-        char originalWord[10];
+	char hangmanWord[20];
+        char originalWord[20];
 	char userEntry[MAX] = "";
 	char incorrectGuesses[MAX] = "";
 	int numIncorrect = 0;
         int numCorrect = 0;
+	srand(time(0));
+	int random = rand() % (15 + 1 - 0) + 0;
+	
+	//FILE *fp;
+        //char str[MAXCHAR];
+        //char* filename = "hangman_words.txt";
+
+        //fp = fopen(filename, "r");
+        //if (fp == NULL){
+         //printf("Could not open file %s",filename);
+         //return 1;
+         //}
+
+	//int j = 0;
+        //while (fgets(str, MAXCHAR, fp) != NULL) {
+        //	if(j == random) {
+	//		sprintf(hangmanWord, str); 	
+	//	}
+	//	printf("%s", str);
+	//	j++;
+	//}
+        //fclose(fp);
+	
+	//strcat(hangmanWord, "\0");
+	
 
 	sprintf(hangmanWord, "straight\0");
         sprintf(originalWord, hangmanWord);
@@ -48,7 +76,7 @@ void func(int sockfd)
 	//write(sockfd,buff,sizeof(buff));
 
 
-        printf("HANGMAN WORD IS %s", hangmanWord);
+        //printf("HANGMAN WORD IS %s", hangmanWord);
  	read(sockfd, buff, sizeof(buff));
         printf("HANGMAN WORD IS %s", hangmanWord);
 
@@ -95,6 +123,7 @@ void func(int sockfd)
                                 write(sockfd, buff, sizeof(buff));
                                 //sprintf(buff, "You Win!");
                                 //write(sockfd, buff, sizeof(buff));
+
 				sprintf(buff, "8You Win!");
                                 write(sockfd, buff, sizeof(buff));
                                 break;
@@ -112,9 +141,10 @@ void func(int sockfd)
 			numIncorrect++;
 			if(numIncorrect > 5)
 			{
-				sprintf(buff, "You Lose.");
+				int messageLength = 13 + strlen(hangmanWord);
+				sprintf(buff, "%dThe word was %s", messageLength, originalWord);
 				write(sockfd, buff, sizeof(buff));
-				sprintf(buff, "Game Over!");
+		         	sprintf(buff, "You Lose!");
 				write(sockfd, buff, sizeof(buff));
 				return;
 
