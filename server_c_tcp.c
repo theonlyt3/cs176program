@@ -35,30 +35,30 @@ void func(int sockfd)
 	srand(time(0));
 	int random = rand() % (15 + 1 - 0) + 0;
 	
-	//FILE *fp;
-        //char str[MAXCHAR];
-        //char* filename = "hangman_words.txt";
+	FILE *fp;
+        char str[MAXCHAR];
+        char* filename = "hangman_words.txt";
 
-        //fp = fopen(filename, "r");
-        //if (fp == NULL){
-         //printf("Could not open file %s",filename);
-         //return 1;
-         //}
+        fp = fopen(filename, "r");
+        if (fp == NULL){
+         printf("Could not open file %s",filename);
+         return 1;
+         }
 
-	//int j = 0;
-        //while (fgets(str, MAXCHAR, fp) != NULL) {
-        //	if(j == random) {
-	//		sprintf(hangmanWord, str); 	
-	//	}
-	//	printf("%s", str);
-	//	j++;
-	//}
-        //fclose(fp);
+	int j = 0;
+        while (fgets(str, MAXCHAR, fp) != NULL) {
+        	if(j == random) {
+			sprintf(hangmanWord, str); 	
+		}
+		printf("%s", str);
+		j++;
+	}
+        fclose(fp);
 	
-	//strcat(hangmanWord, "\0");
+	strcat(hangmanWord, "\0");
 	
 
-	sprintf(hangmanWord, "straight\0");
+	//sprintf(hangmanWord, "straight\0");
         sprintf(originalWord, hangmanWord);
 
 	for(int i = 0; i < strlen(hangmanWord); i++)
