@@ -7,7 +7,16 @@
 #include <sys/types.h> 
 #define MAX 80 
 #define PORT 8080 
-#define SA struct sockaddr 
+#define SA struct sockaddr
+
+int findIndex(char c, char arr[]) {
+  for(int i = 0; i < sizeof(arr); i++) {
+    printf("LOOKING FOR CHARACTER %c",c);
+    printf("%c ", arr[i]);
+    if(arr[i] == c) return i;
+  }
+  return -1;
+}
 
 // Function designed for chat between client and server. 
 void func(int sockfd) 
@@ -15,22 +24,28 @@ void func(int sockfd)
 	char buff[MAX]; 
 	int n;
 	char hangmanWord[10];
+        char originalWord[10];
 	char userEntry[MAX] = "";
 	char incorrectGuesses[MAX] = "";
 	int numIncorrect = 0;
+        int numCorrect = 0;
 
 	sprintf(hangmanWord, "straight\0");
+        sprintf(originalWord, hangmanWord);
 
 	for(int i = 0; i < strlen(hangmanWord); i++)
 	{
 		userEntry[ strlen(userEntry) ] = '_';
 	}
 
-	// infinite loop for chat 
-	sprintf(buff,userEntry);
+	// infinite loop for chat
+        
+        sprintf(buff, "0%d%d%s%s", strlen(hangmanWord), numIncorrect, userEntry, incorrectGuesses);
+
+	//sprintf(buff,userEntry);
 	write(sockfd,buff, sizeof(buff));	
-	sprintf(buff, "Incorrect Guesses: %s\n", incorrectGuesses);
-	write(sockfd,buff,sizeof(buff));
+	//sprintf(buff, "Incorrect Guesses: %s\n", incorrectGuesses);
+	//write(sockfd,buff,sizeof(buff));
 
 
         printf("HANGMAN WORD IS %s", hangmanWord);
@@ -61,22 +76,29 @@ void func(int sockfd)
 			{
 				userEntry[pPosition-hangmanWord] = buff[0];
 				hangmanWord[pPosition-hangmanWord] = '*';
-				pPosition = strchr(hangmanWord, buff[0]); 	
+				pPosition = strchr(hangmanWord, buff[0]);
+                                numCorrect++;        
 			}	
-                    
+                        printf("TESTING0 userEntry: %s\n",userEntry); 
 
-			char* isWordComplete = strchr(userEntry, '_');
-			if(!isWordComplete)
-			{
-				sprintf(buff, "The word was %s", userEntry);
+			//char* isWordComplete = strchr(userEntry, '_');
+                        //printf("IS IT THIS LINE %d\n", isWordComplete-userEntry);
+                        // int n = isWordComplete-hangmanWord;
+                       // printf("n is %d\n",n);
+                       //printf(strlen(isWordComplete)); 
+                        printf("%s\n", userEntry);
+			if(numCorrect == strlen(hangmanWord))
+                        {
+                                //sprintf(buff,"TESTING\n");
+                                int messageLength = 13 + strlen(hangmanWord);
+				sprintf(buff,"%dThe word was %s", messageLength,userEntry);
                                 write(sockfd, buff, sizeof(buff));
-                                sprintf(buff, "You Win!");
+                                //sprintf(buff, "You Win!");
+                                //write(sockfd, buff, sizeof(buff));
+				sprintf(buff, "8You Win!");
                                 write(sockfd, buff, sizeof(buff));
-				sprintf(buff, "Game Over!");
-                                write(sockfd, buff, sizeof(buff));
-                                return;
+                                break;
 			}
-
 
 			/*for(int i = pPosition-hangmanWord; i < strlen(hangmanWord)-1; i++)
 			{
@@ -101,14 +123,14 @@ void func(int sockfd)
 
 
 		//THIS IS WHAT THE MESSAGE FORMAT SHOULD LOOK LIKE RELATIVELY 
-		//sprintf(buff, "0%d%d%s%s", strlen(hangmanWord), numIncorrect, userEntry, incorrectGuesses);
-		//write(sockfd,buff,sizeof(buff));
+		sprintf(buff, "0%d%d%s%s", strlen(hangmanWord), numIncorrect, userEntry, incorrectGuesses);
+		write(sockfd,buff,sizeof(buff));
 	
-		sprintf(buff,userEntry);
-		write(sockfd, buff, sizeof(buff));
+		//sprintf(buff,userEntry);
+		//write(sockfd, buff, sizeof(buff));
 
-		sprintf(buff, "Incorrect Guesses: %s", incorrectGuesses);
-		write(sockfd, buff, sizeof(buff));
+		//sprintf(buff, "Incorrect Guesses: %s", incorrectGuesses);
+		//write(sockfd, buff, sizeof(buff));
 		continue;
 /*
 		int sum = 10;

@@ -45,29 +45,31 @@ void func(int sockfd)
 		write(sockfd, buff, sizeof(buff));
 		read(sockfd, buff, sizeof(buff));
 
-		printf(">>>");
-		for(int i = 0; i < strlen(buff); i++) {
-			printf("%c ", buff[i]);
-		} 
-		printf("\n");
-		read(sockfd, buff, sizeof(buff));
-		printf(">>> %s\n", buff);
 	}
 
 	for (;;) { 
-/*		bzero(buff, sizeof(buff)); 
-		printf("Enter the string : "); 
-		n = 0; 
-		while ((buff[n++] = getchar()) != '\n') 
-			; 
-		write(sockfd, buff, sizeof(buff)); 
-		bzero(buff, sizeof(buff)); 
-		read(sockfd, buff, sizeof(buff)); 
-		printf("From Server : %s", buff); 
-		if ((strncmp(buff, "exit", 4)) == 0) { 
-			printf("Client Exit...\n"); 
-			break; 
-		} */
+
+                if(buff[0] == '0')
+                {
+                  int lengthOfWord = buff[1] - '0';
+                  int numIncorrect = buff[2] - '0';
+
+
+                  //printf("%s, length of word is %d",buff,lengthOfWord);
+                  
+                printf(">>> "); 
+                for(int i = 3; i < lengthOfWord+3; i++) {
+                        printf("%c ", buff[i]);
+                } 
+                printf("\n");
+                //read(sockfd, buff, sizeof(buff));
+                printf(">>> Incorrect Guesses: ");
+                for(int i = 3 + lengthOfWord; i < strlen(buff); i++)
+                {
+                    printf("%c,",buff[i]);
+                }
+                  printf("\n");
+
 
 
 		printf("Letter to guess: ");
@@ -83,15 +85,39 @@ void func(int sockfd)
 
 		write(sockfd, buff, sizeof(buff));
 		read(sockfd,buff,sizeof(buff));
-		printf("From server : %s\n", buff);
-		read(sockfd,buff,sizeof(buff));
-		printf("From server : %s\n", buff);
+		//printf("From server : %s\n", buff);
 		/*while(strlen(buff) > 0)
 		{
 			printf("From server : %s\n", buff);
 			if(strlen(buff) == 1 || buff[0] == 'S') break;
 			read(sockfd,buff,sizeof(buff));
 		}*/
+                }else
+                {
+                  for(int i = 0; i < strlen(buff); i++)
+                  {
+                    if(buff[i] >= '0' && buff[i] <= '9')
+                      continue;
+
+                    printf("%c",buff[i]);
+
+                  }
+                  printf("\n");
+                    //printf("buff:%s\n",buff);
+                    read(sockfd,buff,sizeof(buff));
+                    for(int i = 0; i < strlen(buff); i++)
+                  {
+                    if(buff[i] >= '0' && buff[i] <= '9')
+                      continue;
+                    printf("%c",buff[i]);
+
+                  }
+                  printf("\n");
+
+                    //printf("buff:%s\n",buff);
+                    printf("Game Over!\n");
+                    break;
+                }
 	} 
 } 
 
