@@ -6,6 +6,7 @@
 #include <sys/socket.h> 
 #include <sys/types.h>
 #include <stdio.h>
+#include <errno.h>
 #include <time.h>
 #define MAX 80
 #define MAXCHAR 100000
@@ -69,10 +70,12 @@ void func(int sockfd)
 	// infinite loop for chat
         
         sprintf(buff, "0%d%d%s%s", strlen(hangmanWord), numIncorrect, userEntry, incorrectGuesses);
-
 	//sprintf(buff,userEntry);
 	write(sockfd,buff, sizeof(buff));	
-	//sprintf(buff, "Incorrect Guesses: %s\n", incorrectGuesses);
+        
+
+        
+        //sprintf(buff, "Incorrect Guesses: %s\n", incorrectGuesses);
 	//write(sockfd,buff,sizeof(buff));
 
 
@@ -198,9 +201,16 @@ void func(int sockfd)
 
 // Driver function 
 int main() 
-{ 
-	int sockfd, connfd, len, master_socket, max_clients = 30, client_socket[30]; 
+{
+        int opt = 1; 
+	int i, addrlen, new_socket, sockfd, connfd, len, master_socket, max_clients = 3, client_socket[3]; 
 	struct sockaddr_in servaddr, cli; 
+
+        fd_set readfds;
+        int max_sd, sd, activity;
+
+        char *message = "ECHO Daemon v1.0 \r\n";
+
 
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
@@ -226,7 +236,7 @@ int main()
     	}
 
 	//set master socket to allow multiple connections
-    	if( setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,
+    	if( setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,
           sizeof(opt)) < 0 )
     	{
         	perror("setsockopt");
@@ -255,25 +265,83 @@ int main()
 		printf("Server listening..\n"); 
 	len = sizeof(cli); 
 
-	// Accept the data packet from client and verification 
-	connfd = accept(sockfd, (SA*)&cli, &len); 
-	if (connfd < 0) { 
-		printf("server acccept failed...\n"); 
-		exit(0); 
-	} 
-	else
-		printf("server acccept the client...\n"); 
-		
-		char buff[MAX];
-		sprintf(buff, "Ready to start game? (y/n):", "Ready to start game? (y/n):");
-                write(connfd,buff, sizeof(buff));
+        addrlen = sizeof(servaddr);
 
+        while(1)   
+    {  
+        //clear the socket set  
+        FD_ZERO(&readfds);   
+     
+        //add master socket to set  
+        FD_SET(sockfd, &readfds);   
+        max_sd = sockfd;   
+             
+        //add child sockets to set  
+        for ( i = 0 ; i < max_clients ; i++)   
+        {   
+            //socket descriptor  
+            sd = client_socket[i];   
+                 
+            //if valid socket descriptor then add to read list  
+            if(sd > 0)   
+                FD_SET( sd , &readfds);   
+                 
+            //highest file descriptor number, need it for the select function  
+            if(sd > max_sd)   
+                max_sd = sd;   
+        }   
+     
+        //wait for an activity on one of the sockets , timeout is NULL ,  
+        //so wait indefinitely  
+        activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);   
+       
+        if ((activity < 0) && (errno!=EINTR))   
+        {   
+            printf("select error");   
+        }   
+             
+        //If something happened on the master socket ,  
+        //then its an incoming connection  
+        if (FD_ISSET(sockfd, &readfds))   
+        {  
+            if ((new_socket = accept(sockfd,  
+                    (struct sockaddr *)&servaddr, (socklen_t*)&addrlen))<0)   
+            {
+                perror("accept");   
+                exit(EXIT_FAILURE);   
+            }   
+            //inform user of socket number - used in send and receive commands  
+            //printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , new_socket , inet_ntoa(servaddr.sin_addr) , ntohs (servaddr.sin_port));   
+            //send new connection greeting message  
+            
+            char buff[MAX];
+          sprintf(buff, "Ready to start game? (y/n):", "Ready to start game? (y/n):");
+            write(new_socket,buff, sizeof(buff));
+            
+            func(new_socket);
+            
+            /*if( send(new_socket, message, strlen(message), 0) != strlen(message) )   
+            {   
+                perror("send");   
+            }*/   
+                 
+            //puts("Welcome message sent successfully");   
+            //add new socket to array of sockets  
+            for (i = 0; i < max_clients; i++)   
+            {   
 
+                //if position is empty  
+                if( client_socket[i] == 0 )   
+                {   
+                    client_socket[i] = new_socket;   
+                    printf("Adding to list of sockets as %d\n" , i);   
+                    break;   
+                }   
+            }
+            if( i == 2)
+              break;   
+        } 
 
-	// Function for chatting between client and server 
-	func(connfd); 
+    }
 
-	// After chatting close the socket 
-	close(sockfd); 
-} 
-
+}

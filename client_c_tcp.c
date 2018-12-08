@@ -29,9 +29,10 @@ void func(int sockfd)
 	char response[MAX];
  	
 	read(sockfd,buff,sizeof(buff));
+      
         if(strlen(buff) > 0)
         {
-              printf("%s\n", buff);
+              printf("From server: %s\n", buff);
         }
 	fgets(buff, 1024, stdin);
 	
@@ -70,10 +71,17 @@ void func(int sockfd)
                 }
                   printf("\n");
 
-
-
-		printf("Letter to guess: ");
-		fgets(buff, 1024, stdin);
+                char temp[80];
+                while(1)
+                {
+		  printf("Letter to guess: ");
+	  	  fgets(temp, 1024, stdin);
+                  if(temp[0] >= 'a' && temp[0] <= 'z' && strlen(temp) == 2)
+                    break;
+                  printf("Error! Please guess one letter.\n");
+                
+                }
+                sprintf(buff,temp);
 		char holder[MAX];
 		sprintf(holder,buff);
 		//printf("Holder is %s, sizeof(buff) is %d, strlen(buff) is %d",holder,sizeof(buff),strlen(buff));
